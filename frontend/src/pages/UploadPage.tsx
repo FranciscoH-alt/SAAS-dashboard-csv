@@ -1,3 +1,17 @@
+import React, { useEffect, useState } from "react";
+import { api } from "../api";
+
+interface Upload {
+  id: number;
+  filename: string;
+  status: string;
+  rows_processed: number;
+  created_at: string;
+}
+
+export function UploadPage() {
+  const [uploads, setUploads] = useState<Upload[]>([]);
+  const [file, setFile] = useState<File | null>(null);
 import React, { useState } from 'react';
 import { useDashboardData } from "../state/dashboard";
 import { useNavigation } from "../navigation";

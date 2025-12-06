@@ -63,7 +63,7 @@ const UploadPage: React.FC = () => {
       }
 
       const result = await response.json();
-
+      
       // Store data and navigate to dashboard
       sessionStorage.setItem('dashboardData', JSON.stringify(result));
       setData(result);

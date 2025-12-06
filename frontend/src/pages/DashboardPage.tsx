@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { DashboardData, StockoutPrediction, useDashboardData } from "../state/dashboard";
 
 function MetricCard({
   title,
@@ -308,66 +307,26 @@ function TopProducts({
   );
 }
 
-const demoDashboardData: DashboardData = {
-  financial: {
-    gross_sales: 185000,
-    net_revenue: 154200,
-    net_profit: 48250,
-    aov: 68,
-    num_orders: 2250,
-    platform_breakdown: [
-      { platform: "Shopify", revenue: 78000 },
-      { platform: "Amazon", revenue: 52000 },
-      { platform: "eBay", revenue: 12400 },
-      { platform: "TikTok", revenue: 11800 },
-      { platform: "Wholesale", revenue: 20100 },
-    ],
-    top_products: [
-      { name: "Aurora Headphones", revenue: 22000, orders: 310 },
-      { name: "Nebula Hoodie", revenue: 18400, orders: 260 },
-      { name: "Solar Backpack", revenue: 16500, orders: 190 },
-      { name: "Lumen Desk Lamp", revenue: 14750, orders: 230 },
-      { name: "Orbit Smartwatch", revenue: 13200, orders: 160 },
-    ],
-  },
-  inventory: {
-    total_inventory_units: 8640,
-    total_inventory_value: 272000,
-    dioh_by_sku: [
-      { sku: "AUR-01", dioh: 24 },
-      { sku: "NEB-02", dioh: 41 },
-      { sku: "SOL-03", dioh: 73 },
-      { sku: "LUM-04", dioh: 55 },
-      { sku: "ORB-05", dioh: 18 },
-      { sku: "ARC-06", dioh: 96 },
-      { sku: "PRM-07", dioh: 62 },
-      { sku: "LTD-08", dioh: 32 },
-    ],
-    stockout_predictions: [
-      {
-        sku: "AUR-01",
-        title: "Aurora Headphones",
-        inventory_qty: 180,
-        dioh: 18,
-        predicted_stockout_date: new Date(Date.now() + 18 * 86400000).toISOString(),
-      },
-      {
-        sku: "ORB-05",
-        title: "Orbit Smartwatch",
-        inventory_qty: 90,
-        dioh: 12,
-        predicted_stockout_date: new Date(Date.now() + 12 * 86400000).toISOString(),
-      },
-      {
-        sku: "NEB-02",
-        title: "Nebula Hoodie",
-        inventory_qty: 240,
-        dioh: 26,
-        predicted_stockout_date: new Date(Date.now() + 26 * 86400000).toISOString(),
-      },
-    ],
-  },
-};
+function EmptyState() {
+  const { navigate } = useNavigation();
+  return (
+    <div className="flex flex-col items-center text-center gap-4 py-16 bg-white/5 border border-dashed border-white/10 rounded-3xl">
+      <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
+        📂
+      </div>
+      <div>
+        <p className="text-xl font-semibold text-white">No dashboard data yet</p>
+        <p className="text-slate-400 text-sm">Upload ecommerce_sales.csv, train_df files or Shopify exports to unlock insights.</p>
+      </div>
+      <button
+        onClick={() => navigate("/upload")}
+        className="px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+      >
+        Go to upload studio
+      </button>
+    </div>
+  );
+}
 
 export function DashboardPage() {
   const { data } = useDashboardData();
@@ -378,42 +337,41 @@ export function DashboardPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const activeData: DashboardData = data ?? demoDashboardData;
-  const usingSample = !data;
-
   const financialCards = useMemo(() => {
-    if (!activeData?.financial) return [];
+    if (!data?.financial) return [];
     return [
       {
         title: "Gross Sales",
-        value: `$${(activeData.financial.gross_sales || 0).toLocaleString()}`,
+        value: `$${(data.financial.gross_sales || 0).toLocaleString()}`,
         badge: "Before discounts",
         accent: "bg-gradient-to-br from-indigo-500 to-purple-500",
         icon: "💵",
       },
       {
         title: "Net Revenue",
-        value: `$${(activeData.financial.net_revenue || 0).toLocaleString()}`,
+        value: `$${(data.financial.net_revenue || 0).toLocaleString()}`,
         badge: "After discounts",
         accent: "bg-gradient-to-br from-emerald-400 to-teal-500",
         icon: "📈",
       },
       {
         title: "Net Profit",
-        value: `$${(activeData.financial.net_profit || 0).toLocaleString()}`,
+        value: `$${(data.financial.net_profit || 0).toLocaleString()}`,
         badge: "Est. after COGS",
         accent: "bg-gradient-to-br from-amber-400 to-orange-500",
         icon: "💎",
       },
       {
         title: "Avg Order Value",
-        value: `$${(activeData.financial.aov || 0).toLocaleString()}`,
-        badge: `${(activeData.financial.num_orders || 0).toLocaleString()} orders`,
+        value: `$${(data.financial.aov || 0).toLocaleString()}`,
+        badge: `${(data.financial.num_orders || 0).toLocaleString()} orders`,
         accent: "bg-gradient-to-br from-cyan-400 to-blue-500",
         icon: "🛒",
       },
     ];
-  }, [activeData]);
+  }, [data]);
+
+  if (!data) return <EmptyState />;
 
   return (
     <div className="space-y-10">
@@ -425,16 +383,6 @@ export function DashboardPage() {
           and train_df exports aligned in one command center.
         </p>
       </div>
-
-      {usingSample && (
-        <div className="border border-indigo-400/40 bg-indigo-500/10 text-slate-100 rounded-2xl px-4 py-3 text-sm flex items-center gap-3">
-          <span className="text-indigo-200">ℹ️</span>
-          <div>
-            <p className="font-semibold text-white">Showing demo insights</p>
-            <p className="text-slate-300">Upload your CSVs to replace this preview with live metrics.</p>
-          </div>
-        </div>
-      )}
 
       {financialCards.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -452,9 +400,9 @@ export function DashboardPage() {
         </div>
       )}
 
-      {activeData.financial && (
+      {data.financial && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {activeData.financial.platform_breakdown && activeData.financial.platform_breakdown.length > 0 && (
+          {data.financial.platform_breakdown && data.financial.platform_breakdown.length > 0 && (
             <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -465,19 +413,19 @@ export function DashboardPage() {
                   Animated chart
                 </span>
               </div>
-              <PlatformPie data={activeData.financial.platform_breakdown} />
+              <PlatformPie data={data.financial.platform_breakdown} />
             </div>
           )}
 
-          {activeData.financial.top_products && activeData.financial.top_products.length > 0 && (
+          {data.financial.top_products && data.financial.top_products.length > 0 && (
             <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
-              <TopProducts data={activeData.financial.top_products} />
+              <TopProducts data={data.financial.top_products} />
             </div>
           )}
         </div>
       )}
 
-      {activeData.inventory && (
+      {data.inventory && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -493,21 +441,21 @@ export function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <MetricCard
               title="Inventory Units"
-              value={(activeData.inventory.total_inventory_units || 0).toLocaleString()}
+              value={(data.inventory.total_inventory_units || 0).toLocaleString()}
               badge="Items in stock"
               accent="bg-gradient-to-br from-blue-500 to-sky-500"
               icon="📦"
             />
             <MetricCard
               title="Inventory Value"
-              value={`$${(activeData.inventory.total_inventory_value || 0).toLocaleString()}`}
+              value={`$${(data.inventory.total_inventory_value || 0).toLocaleString()}`}
               badge="Total stock value"
               accent="bg-gradient-to-br from-teal-400 to-emerald-500"
               icon="💰"
             />
           </div>
 
-          {activeData.inventory.dioh_by_sku && activeData.inventory.dioh_by_sku.length > 0 && (
+          {data.inventory.dioh_by_sku && data.inventory.dioh_by_sku.length > 0 && (
             <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -518,17 +466,17 @@ export function DashboardPage() {
                   Red / Yellow / Green coding
                 </span>
               </div>
-              <DIOHChart data={activeData.inventory.dioh_by_sku} />
+              <DIOHChart data={data.inventory.dioh_by_sku} />
             </div>
           )}
 
-          {activeData.inventory.stockout_predictions && activeData.inventory.stockout_predictions.length > 0 && (
-            <StockoutTable items={activeData.inventory.stockout_predictions} />
+          {data.inventory.stockout_predictions && data.inventory.stockout_predictions.length > 0 && (
+            <StockoutTable items={data.inventory.stockout_predictions} />
           )}
         </div>
       )}
 
-      {activeData.financial?.platform_breakdown && activeData.inventory?.stockout_predictions && (
+      {data.financial?.platform_breakdown && data.inventory?.stockout_predictions && (
         <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-cyan-500/10 px-6 py-5 text-sm text-slate-200 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <p className="font-semibold text-white mb-1">Upload once, analyze everywhere</p>
           <p className="text-slate-300">

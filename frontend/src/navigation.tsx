@@ -15,10 +15,6 @@ interface NavigationContextValue {
 const NavigationContext = createContext<NavigationContextValue | null>(null);
 
 export function NavigationProvider({ children }: { children: React.ReactNode }) {
-  const [path, setPath] = useState(() => {
-    if (typeof window === "undefined") return "/upload";
-    return window.location.pathname || "/upload";
-  });
 
   const navigate = useCallback(
     (newPath: string) => {

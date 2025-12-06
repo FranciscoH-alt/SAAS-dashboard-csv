@@ -39,4 +39,24 @@ export const api = {
     }),
   listUploads: () => request("/uploads"),
   getDashboardSummary: () => request("/dashboard/summary"),
+  uploadProfile: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return fetch(`${API_URL}/upload`, {
+      method: "POST",
+      body: formData,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    }).then((res) => {
+      if (!res.ok) throw new Error("Upload failed");
+      return res.json();
+    });
+  },
+  analyzeEcommerce: (files: FileList) => {
+    const formData = new FormData();
+    Array.from(files).forEach((file) => formData.append("files", file));
+    return fetch(`${API_URL}/analyze-ecommerce`, { method: "POST", body: formData }).then((res) => {
+      if (!res.ok) throw new Error("Analysis failed");
+      return res.json();
+    });
+  },
 };

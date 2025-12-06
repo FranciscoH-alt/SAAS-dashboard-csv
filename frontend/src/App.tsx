@@ -1,35 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+import { UploadPage } from "./pages/UploadPage";
+import { EcommercePage } from "./pages/EcommercePage";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [page, setPage] = useState<"ecommerce" | "upload">("ecommerce");
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="min-h-screen bg-slate-900 text-slate-100">
+      <header className="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+        <div className="text-lg font-semibold">Ecommerce KPI Studio</div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setPage("ecommerce")}
+            className={`px-3 py-1 rounded ${page === "ecommerce" ? "bg-indigo-500" : "bg-slate-700"}`}
+          >
+            Ecommerce Analytics
+          </button>
+          <button
+            onClick={() => setPage("upload")}
+            className={`px-3 py-1 rounded ${page === "upload" ? "bg-indigo-500" : "bg-slate-700"}`}
+          >
+            Upload Debugger
+          </button>
+        </div>
+      </header>
+
+      {page === "ecommerce" ? <EcommercePage /> : <UploadPage />}
+    </div>
+  );
 }
 
-export default App
+export default App;

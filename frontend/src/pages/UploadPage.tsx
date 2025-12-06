@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useDashboardData } from "../state/dashboard";
+import { useNavigation } from "../navigation";
 
 const UploadPage: React.FC = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const navigate = useNavigate();
+  const { setData } = useDashboardData();
+  const { navigate } = useNavigation();
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -62,8 +64,9 @@ const UploadPage: React.FC = () => {
 
       const result = await response.json();
       
-      // Store data in sessionStorage and navigate to dashboard
+      // Store data and navigate to dashboard
       sessionStorage.setItem('dashboardData', JSON.stringify(result));
+      setData(result);
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message);

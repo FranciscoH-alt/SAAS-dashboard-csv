@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { StockoutPrediction, useDashboardData } from "../state/dashboard";
-import { useNavigation } from "../navigation";
 
 function MetricCard({
   title,
